@@ -1,6 +1,6 @@
 ---
 title: "Básicos R Sesión 2"
-author: "Emmanuel Martinez"
+author: "Axel Hdz"
 date: "25 de marzo de 2021"
 output: pdf_document
 ---
