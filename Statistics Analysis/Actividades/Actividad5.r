@@ -1,0 +1,175 @@
+ct---
+title: "Actividad05 - Análisis Estadístico"
+author: "Axel Amós"
+date: "28/5/2021"
+output: pdf_document
+---
+```{r, include= FALSE}
+getwd()
+setwd("C:/Users/hplax/Desktop/ITESM/SegundoSemestre/Estadistica/Actividades")
+```
+
+## Actividad 5 - Análisis Estadístico
+
+## El Marcapasos
+
+### 1. El Problema: Encontrar un modelo lineal que relacione Periodocon ~ f(pulsocon, pulsosin, periodosin)
+
+En cálculo y = f(x1, x2, x3)
+
+Se trata de 102 pacientes, los cuales 51 están sin marcapasos y 51 con marcapasos. Las variables son medición del tiempo
+entre pulsos (en segundos) e intensidad de pulso (mV).
+
+### 2. Leyendo los datos
+```{r}
+M = read.csv("marcapasos.csv") #Lee el archivo .csv
+head(M, n = 2)
+```
+
+## Análisis de independencia entre variables Xi
+
+Hay que observar si hay independencia entre: Periodocon ~ f(pulsocon, pulsosin, periodosin)
+
+pulsocon - pulsosin
+pulsocon - periodosin
+pulsosin - periodosin
+
+(Si la correlación es 0 son independientes, si no, no)
+
+$H_0:$ La correlación (R)= 0 ((no hay dependencia entre pulsocon y pulsosin)
+$H_1$ = La correlacion (R) $\neq$ 0 (sí hay dependencia)
+$\alpha = 0.05$
+
+```{r}
+cor.test(M$pulsocon, M$pulsosin)
+```
+
+Como valor p = 0.98 > $\alpha$ = 0.05, no se rechaza $H_0$, por lo que no hay correlación entre ellas.
+
+
+**Respecto a pulsocon y periodosin:**
+
+$H_0:$ La correlación (R) = 0 (no hay dependencia entre pulsocon y periodosin)
+$H_1$ = La correlacion (R) $\neq$ 0 (sí hay dependencia)
+$\alpha = 0.05$
+
+```{r}
+cor.test(M$pulsocon, M$periodosin)
+```
+
+Como valor p = 0.2821 > $\alpha$ = 0.05, no se rechaza $H_0$, por lo que no hay correlación entre ellas.
+
+**Respecto a pulsosin y periodosin:**
+
+$H_0:$ La correlación (R) = 0 (no hay dependencia entre pulsosin y periodosin)
+$H_1$ = La correlacion (R) $\neq$ 0 (sí hay dependencia)
+$\alpha = 0.05$
+
+```{r}
+cor.test(M$pulsosin, M$periodosin)
+```
+
+Como valor p = 8.33e-12 < $\alpha$ = 0.05, se rechaza $H_0$, por lo que hay correlación entre ellas, aceptando $H_1$, diciendo que son dependientes.
+
+Tenemos que excluir una de las variables. Escogeremos quitar a la de menor correlación con la variable respuesta (periodo con).
+
+```{r}
+cor(M$periodocon, M$periodosin)
+cor(M$periodocon, M$pulsosin)
+```
+
+Como pulsosin es la de menor correlación con la variable respuesta periodocon, la sacamos del modelo.
+
+Ahora se trata de hallar un modelo lineal que relacione Periodocon = f(pulsocon, periodosin)
+y = f(x1,x2)
+
+## Modelo de regresión multiple
+
+Se trata ahora de mostrar que hay dependencia entre las variables independientes (pulsocon, periodosin),
+con la variable Periodocon (la variable respuesta).
+
+$H_0 = \beta_1 = 0$ (significa que X y Y son independientes, el modelo no sirve)
+$H_1 = \beta_1 \neq 0$ (sí hay dependencia)
+$\alpha = 0.05$
+
+$H_0 = \beta_2 = 0$ (significa que X y Y son independientes, el modelo no sirve)
+$H_1 = \beta_2 \neq 0$ (sí hay dependencia)
+$\alpha = 0.05$
+
+```{r}
+regresion = lm(M$periodocon ~ M$pulsocon + M$periodosin)  #lineal model
+S = summary(regresion)
+S
+```
+
+Intercept - Intersección
+M$Pulsocon - Beta 1 (ver el valor Pr( >|t|)
+M$Periodosin - Beta 2 (ver el valor Pr ( >|t|)
+
+y = b0 + b1x1
+
+Como el valor p de todos los resultados es menor que $\alpha$, todas las betas difieren de 0,
+por tanto hay dependencia entre PulsoCon, PeriodoSin y la variable respuesta PeriodoCon.
+
+La fórmula es:
+
+y = bo + b1x1 + b2x2
+
+Periodocon =  1.040005 - 0.863840 pulsocon + 0.019166 periodosin
+
+
+## Coeficiente de determinación del modelo
+
+Siempre se toma el multiple para regresion simple
+Siempre se toma el ajustado para el multivariable
+
+Como el R^2 es 0.99, significa que el 99% de la variación total queda explicada por el modelo.
+
+# Análisis de Residuos
+
+### Gráfico de Residuos
+
+```{r}
+plot(regresion$fitted.values, regresion$residuals)
+abline(h = 0, col = "blue")
+```
+
+Se observa que la variación o varianza es aproximadamente igual a lo largo del eje horizontal.
+
+## Prueba de Normalidad
+
+$H_0$: Los datos provienen de una distribución (población) normal
+$H_1$: Los datos no provienen de una distribución (población) normal
+$\alpha$ = 0.05
+```{r}
+shapiro.test(regresion$residuals)
+```
+
+Como el valor $p$ = 0.07225 > $\alpha$ = 0.05, no se rechaza $H_0$.
+Por tanto, suponemos y concluimos que los datos provienen de una población normal.
+
+```{r}
+hist(regresion$residuals)
+```
+
+### Prueba de que la media de residuos es cero
+
+$H_0$: La media de residuos es igual a 0
+$H_1$: La media de residuos es diferente a 0
+$\alpha$ = 0.05
+
+$\mu_{residuos} = 0$
+$\mu_{residuos} \neq 0$
+$\alpha = 0.05$
+```{r}
+t.test(regresion$residuals)
+```
+
+Como el valor p de la prueba resultó 1 > $\alpha$ = 0.05, entonces aceptamos $H_0$. Es decir, suponemos que la media de residuos es 0.
+
+Interpretando el intervalo de confianza dado al 95% tenemos que la verdadera media de los residuos está entre -0.0027 y 0.0027. Este intervalo contiene al 0. Entonces, como contiene al 0, no se puede rechazar $H_0$. Si fuera de .1 a .5 no se podría aceptar $H_0$, porque
+no tiene el valor de 0.
+
+Por tanto, concluimos que la media de residuos es 0.
+
+
