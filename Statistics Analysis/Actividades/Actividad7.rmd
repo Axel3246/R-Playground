@@ -1,0 +1,112 @@
+---
+title: "Actividad07V2 - Equipos"
+author: "Axel Amós"
+date: "4/6/2021"
+output: pdf_document
+---
+
+## Actividad 07 - Series de Tiempo en Equipo
+
+## El caso de los precios de los meses?
+
+Se trata de encontrar el mejor método para predecir la el precio al 17 de Septiembre
+
+## Leyendo los datos
+
+```{r}
+ds <- 1:17
+ventas <- c(81.32, 81.10, 80.38, 81.34, 80.54, 80.62, 79.54, 79.46,
+            81.02, 80.98, 80.80, 81.44, 81.48, 80.75, 80.48, 80.01, 80.33)
+```
+
+## Gráfico de dispersion de la serie
+```{r}
+plot(ds, ventas, col="blue",type = 'o', main = 'Precios entre meses', xlab = 'Dias', ylab = 'Precio')
+```
+
+Se puede observar que la gráfica no muestra tendencia aparentemente, es decir, no tiende a crecer o decrecer al incrementarse la variable semana (x). Talvez exista la presencia de dos ciclos.
+
+##Pronóstico de promedios móviles n = 3
+```{r}
+pronostico = NA
+e = NA
+
+for(i in 1:17){
+  pronostico[i + 3] = (ventas[i]+ventas[i+1]+ventas[i+2])/3
+  e[i] = pronostico[i+3]-ventas[i+3]  #error
+}
+
+CME = mean(e^2, na.rm = T) 
+CME
+pronostico[18]
+```
+
+Con promedios moviles, se tiene que el valor del día siguiente es de $80.27.
+
+## Gráfica suavizada de promedios moviles n = 3
+```{r}
+plot(ds, ventas, col="blue",type = 'o', main = 'Coste por mes', xlab = 'Dia', ylab = 'Coste')
+x = 4:17
+y = pronostico[x]
+lines(x,y, col = 'red', type = 'o')
+```
+
+## Técnica de Promedios Ponderados para n = 3 con pesos 1/6, 2/6, 3/6
+
+```{r}
+pronostico2 = NA
+e2 = NA
+
+for(i in 1:17){
+   pronostico2[i + 3] = (1/6)*ventas[i] + (2/6)*ventas[i+1] + (3/6)*ventas[i+2]
+   e2[i] = pronostico2[i+3]-ventas[i+3]  #error
+}
+
+CME2 = mean(e2^2, na.rm = T)
+CME2
+pronostico2[18]
+```
+
+Se estima que el costo, por medio de promeidos ponderados para el siguiente dia es de 80.24.
+
+```{r}
+plot(ds, ventas, col="blue",type = 'o', main = 'Coste por mes', xlab = 'Dia', ylab = 'Coste')
+x2 = 4:17
+y2 = pronostico2[x2]
+lines(x2,y2, col = 'red', type = 'o')
+```
+
+## Método de suavizamiento exponencial
+
+```{r}
+pronostico3 = NA
+pronostico3[1] = ventas[1]
+pronostico3[2] = ventas[1]
+
+a = 0.60 #puede moverse segun se requiera o diga el problema
+e3 = NA
+
+for(i in 2:17){
+   pronostico3[i + 1] = a*ventas[i] + (1-a)*pronostico3[i]
+   e3[i] = pronostico3[i]-ventas[i]  #error
+}
+
+CME3 = mean(e3^2, na.rm = T)
+CME3
+
+pronostico3[18]
+```
+
+Se estima que el costo para la semana 18 es de $80.31.
+
+```{r}
+plot(ds,ventas, col = "red", type = "o", main = 'Coste por mes', xlab = 'Dia', ylab = 'Coste')
+x3 = 2:17
+y3 = pronostico3[x3]
+lines(x3,y3, col = "blue", type = "o")
+```
+
+Se observa que con $\alpha$ = 0.6, se obtiene un menor CME en el modelo de suavizamiento exponencial. Por lo tanto, se concluye que este es el mejor modelo predictivo para la situación planteada.
+
+
+
