@@ -18,7 +18,13 @@ Happy coding!
 2. [Statistics Analysis](https://github.com/SoMa-0/R-Playground/tree/main/Statistics%20Analysis/Actividades)
     - Check out how you could apply R in statistics.
     
-3. [R Analytics](https://github.com/Axel3246/Python-Playground/tree/main/Projects) 
+3. [R Analytics](https://github.com/Axel3246/R-Playground/tree/main/R%20Analytics) 
     - Explore R and it's libraries applied in general prupose analytics.
+
+## Contributors
+
+<a href="https://github.com/axel3246/R-playground/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=axel3246/R-playground" />
+</a>
 
 ## Thanks for passing by!
