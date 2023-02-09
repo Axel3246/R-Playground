@@ -1,0 +1,244 @@
+---
+title: "Análisis Exploratorio de datos utilizando R"
+author: ''
+date: "11/5/2022"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+- A01245418 Andrés Sarellano Acevedo 
+- A00829837 Axel Amós Hernández Cárdenas 
+- A01281371 Izel María Ávila Rodríguez 
+- A01383422 Melissa Elvia Salazar Carrillo 
+- A00573134 Macías Romero Jorge Humberto
+
+
+## 1. Cargando y mostrando el dataframe
+
+```{r}
+setwd('C:/users/hplax/Desktop/ITESM/CuartoSemestre')
+
+```
+
+```{r include = FALSE}
+library(readxl)
+wines <- read_excel("C:/Users/hplax/Desktop/ITESM/CuartoSemestre/wines.xlsx")
+df1 <- wines
+df1
+```
+
+
+```{r}
+df2 <- wines
+df2$Cultivar <- NULL
+df2
+```
+
+## 2. Para todas las variables cuantitativas obtén las siguientes métricas: media, mediana, rango, y desviación estándar.
+
+### Media
+
+A continuación se muestra la media de cada variable cuantitativa del dataframe.
+```{r}
+apply(df2,2,mean)
+#mean(df2$Alcohol)
+```
+
+### Mediana
+
+A continuación se muestra la mediana de cada variable cuantitativa del dataframe.
+```{r}
+apply(df2,2,median)
+#mean(df2$Alcohol)
+```
+
+### Rango
+
+A continuación se muestra el rango de cada variable cuantitativa del dataframe.
+
+```{r}
+apply(df2,2,range)
+#range(df2$Alcohol)
+```
+
+### Desviaciones Estandar
+
+A continuación se muestran las desviaciones estándar de cada variable cuantitativa del dataframe.
+
+```{r}
+
+apply(df2,2,sd)
+
+```
+
+## 3. Para variables cualitativas, genera gráficas de barras o de pastel para mostrar la distribución de frecuencias. ¿Cuál es el valor que más se repite? ¿Cuántas veces se repite? ¿Qué porcentaje de veces se repite?
+
+### Table de frecuencias
+```{r}
+table(wines$Cultivar)
+```
+
+### Grafica de Pastel
+```{r}
+pie(table(wines$Cultivar), labels = c("Uno","Dos","Tres"), main="Gráfica de Pastel de Frecuencias")
+```
+
+### Porcentajes
+```{r}
+percent1 <- 59/178 * 100
+percent1
+percent2 <- 71/178 * 100
+percent2
+percent3 <- 48/178 * 100
+percent3
+```
+
+Se indica por la taba de frecuencias que el valor que más se repite en la columna del dato cualitativo es el 2. Esto mismo se puede apreciar en la gráfica de pastel creada a partir de la tabla de frecuencias.
+
+Por otra parte, los porcentajes de cada frecuencia son:
+
+- Frecuencia del 1: 33.14%
+- Frecuencia del 2: 39.88%
+- Frecuencia del 3: 26.96%
+
+## 4. Para variables cuantitativas genera un diagrama de dispersión comparándolas (una en cada eje) y agrega una línea de regresión. ¿Cuál es la correlación entre las variables? ¿Es positiva o negativa? ¿Los datos se ajustan bien a la línea de regresión?
+
+### Total fenoles y flavonoides
+```{r}
+
+# Obteniendo los valores de X y B para la linea de regresión
+summary(lm(Flavanoids~Total.phenols, wines))
+```
+
+```{r}
+
+plot(x=wines$Total.phenols , y=wines$Flavanoids, main="Nivel de total fenoles y flavonoides", ylab="flavonoides", xlab = "Total fenoles")
+
+abline(a=-1.13763, b = 1.37984, col = "purple")
+
+text(2, 4.5, "y = 1.380x - 1.138")
+text(2,4, "R^2 = 0.746")
+#r^2 = 0.746
+```
+
+Se puede observar que el par de "Total de Fenoles" y "Flavonoides" cuentan con un valor de su R^2 = 0.746, por lo que se podría concluir que para este par, la correlacion es buena y positiva, permitiendo que los datos se ajusten bien a la linea de regresión creada con abline.
+
+
+### Alcohol y Total fenoles
+```{r}
+summary(lm(Alcohol~Total.phenols, df1))
+```
+
+```{r}
+plot(x=wines$Total.phenols , y=df1$Alcohol, main="Nivel de total fenoles y Alcohol", ylab="Alcohol", xlab = "Total fenoles")
+abline(a=12.1399, b = 0.3750 ,col = "pink")
+
+text(1.5, 14.8, "y = 0.375x + 12.1399", cex = 0.8)
+text(1.5,14.4, "R^2 = 0.0784", cex=0.8)
+
+# r^2 = 0.07837
+
+```
+
+
+Se puede observar que el par de "Total de Fenoles" y "Alcohol" cuentan con un valor de su R^2 = 0.0784, por lo que se podría concluir que para este par, la correlacion es debil y positiva,
+por lo que los datos no se ajustarán completamente a la linea de regresion creada con abline.
+
+
+### Alcohol y Acido Málico
+
+```{r}
+summary(lm(Alcohol~Malic.acid, df1))
+```
+
+
+```{r}
+plot(x=df1$Malic.acid , y=df1$Alcohol, main="Alcohol y ácido málico", ylab="Alcohol", xlab = "Ácido málico")
+abline(a=12.84035  ,b = 0.06860 ,col = "green")
+
+text(5, 11.6, "y = 0.0686x + 12.84", cex = 0.8)
+text(5,11.3, "R^2 = 0.00328", cex=0.8)
+# r^2 = 0.00328
+```
+
+Se puede observar que el par de "Alcohol" y "Acido Málico" cuentan con un valor de su R^2 = 0.00328, por lo que se podría concluir que para este par, la correlacion es casi nula, pero positiva,
+por lo que los datos no se ajustan a la linea de regresion creada con abline.
+
+
+### Alcohol y Flavanoids
+```{r}
+summary(lm(Alcohol~Flavanoids, df1))
+```
+
+```{r}
+plot(x=df1$Flavanoids , y=df1$Alcohol, main="Nivel de Alcohol y Flavanoids", ylab="Alcohol", xlab = "Flavanoids")
+abline(a=12.61004  ,b = 0.19247 ,col = "blue")
+
+text(4, 12, "y = 0.1925x + 12.61", cex = 0.8)
+text(4,11.7, "R^2 = 0.0507", cex=0.8)
+# r^2 = 0.05072
+```
+
+Se puede observar que el par de "Alcohol" y "Flavonoides" cuentan con un valor de su R^2 = 0.0507, por lo que se podría concluir que para este par, la correlacion es igual que la anterior: casi nula pero positiva, por lo que los datos no se ajustarán a la linea de regresion creada con abline.
+
+
+### Alcohol y Alcalinity.of.ash
+
+```{r}
+summary(lm(Alcohol~Alcalinity.of.ash, df1))
+```
+
+```{r}
+plot(x=df1$Alcalinity.of.ash , y=df1$Alcohol, main="Nivel de Alcohol y Alcalinity of ash", ylab="Alcohol", xlab = "Alcalinity.of.ash")
+abline(a=14.47085  ,b = -0.07542 ,col = "orange")
+
+
+text(13, 12, "y = -0.0754x + 14.47", cex = 0.8)
+text(13,11.7, "R^2 = -0.09111", cex=0.8)
+
+# r^2 = 0.09111
+```
+
+Se puede observar que el par de "Alcohol" y "Alcalinity of Ash" cuentan con un valor de su R^2 = -0.0911, por lo que se podría concluir que para este par, la correlacion casi nula pero negativa, por lo que los datos no se ajustarán a la linea de regresion creada con abline.
+
+## 5. Para un par de variable cuantitativa-cualitativa, y elabora un boxplot. Explica qué significan las partes del boxplot (son 5 partes). ¿Qué información me dan los boxplots? ¿Las distribuciones de valores en el eje "y" son los mismos para todas las categorías?
+
+El boxplot está compuesto por 5 partes:
+
+- Mínimo: representa el valor mínimo de los datos.
+
+- Primer Cuartil (Q1): el 25% de los valores son menores o igual a este valor.
+
+- Mediana: divide en dos partes iguales la distribución; de forma que el 50% de los valores son menores o igual a este punto.
+
+- Tercer Cuartil (Q3): el 75% de los valores son menores o igual a este valor.
+
+- Máximo: representa el valor máximo de los datos.
+ 
+Los boxplots son una representación visual que describe varias características importantes al mismo tiempo. Nos permite identificar valores atípicos y comparar distribuciones.(Montes, 2019) (Estadistica para Todos, 2018)
+
+```{r}
+
+list.values1 <- unlist(wines[1:59,2])
+list.values2 <- unlist(wines[60:130,2])
+list.values3 <- unlist(wines[131:178,2])
+boxplot(x=list(list.values1,list.values2,list.values3),names=c("1","2","3"),  main = "Boxplot (Alcohol-Cultivar)", ylab ="Alcohol", xlab ="Cultivar")
+
+```
+
+Para este boxplot, se puede observar que la distribución  de valores en el eje “y” no son los mismos ya que cada cultivo tiene diferentes valores, los cual los hacen tener un máximo y un mínimo diferentes.
+
+## 6. Escribe tus conclusiones. ¿Cuál es la información más importante que te dan los datos?
+
+Consideramos que la información mas importante que muestran los datos para este set, sería todo lo relacionado con los modelos de regresion lineal y boxplot. Si es importante considerar aspectos de la media, mediana, moda, frecuencia, etc, pero se cuentan con herramientas mas completas para el análisis de un conjunto de datos lo cual nos puede ayudar a generar predicciones y determinar posibles futuras tendencias. En conclusión, las herramientas y analisis de regresion lineal o boxplot, ofrecer un análisis poderoso sobre los datos y son muy útiles para cualquier trabajo que requiera análisis de datos.
+
+
+## Referencias
+
+Estadistica Para Todos. (2008). Diagrama de Caja y Bigotes. Titapg. https://www.estadisticaparatodos.es/taller/graficas/cajas.html
+
+Montes, D. (2019). Diagrama Box Plot. PCG. https://www.pgconocimiento.com/diagrama-boxplot/
+
+
+
